@@ -11,7 +11,6 @@ extern crate clap;
 use std::process::exit;
 use simplelog::{TermLogger, LogLevelFilter};
 use clap::{App, AppSettings, SubCommand};
-use std::io;
 
 mod config;
 mod cygpath;
