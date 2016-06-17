@@ -1,0 +1,14 @@
+[package]
+name = "ckbackup"
+version = "0.1.0"
+authors = ["Kevin Darlington <kevin@outroot.com>"]
+
+[dependencies]
+time = "0.1"
+toml = "0.1"
+rustc-serialize = "0.3"
+winapi = "0.2"
+kernel32-sys = "0.2"
+kernel32x = { path = "kernel32x" }
+simplelog = "0.1"
+log = "0.3"

@@ -1,0 +1,24 @@
+user = "kev"
+hostname = "hostname"
+repo = "root@192.168.0.1:/backup/{user}/{hostname}"
+
+compression = "lz4"
+one_file_system = true
+
+sources = [
+  'C:\',
+  'D:\',
+]
+
+volume_shadow_copy = true
+
+[retention]
+#keep_within = 3H
+#keep_hourly = 24
+keep_daily = 7
+keep_weekly = 4
+keep_monthly = 6
+#keep_yearly = 1
+
+[consistency]
+check = true

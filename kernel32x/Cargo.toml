@@ -1,0 +1,11 @@
+[package]
+name = "kernel32x"
+version = "0.1.0"
+authors = ["Kevin Darlington <kevin@outroot.com>"]
+build = "build.rs"
+
+[lib]
+name = "kernel32x"
+
+[dependencies]
+winapi = "0.2"
