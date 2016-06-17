@@ -22,3 +22,6 @@ keep_monthly = 6
 
 [consistency]
 check = true
+
+# [env]
+# SSH_AUTH_SOCK = ""

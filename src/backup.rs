@@ -3,14 +3,19 @@ use time;
 
 use config;
 
-fn run_borg(borg_cmd: &Command) {
+fn run_borg(cfg: &config::Config, borg_cmd: &Command) {
   let mut cmd = Command::new("vendor\\borg\\bin\\bash");
   cmd.arg("--login")
     .arg("-c")
     .arg(format!("{:?}", borg_cmd))
-    .env("SSH_AUTH_SOCK", "")
     .stdout(Stdio::inherit())
     .stderr(Stdio::inherit());
+
+  if let Some(env) = cfg.general.env.clone() {
+    for (k, v) in env {
+      cmd.env(k, v);
+    }
+  }
 
   match cmd.output() {
     Ok(_) => (),
@@ -22,88 +27,85 @@ fn run_borg(borg_cmd: &Command) {
 }
 
 pub fn init(cfg: &config::Config) {
-  info!("Initializing backup: {}", cfg.repo);
-  run_borg(Command::new("/bin/borg")
-    .arg("init")
-    .arg(&cfg.repo)
-    .arg("--verbose"));
+  if let Some(init) = cfg.init.clone() {
+    info!("Initializing backup: {}", cfg.general.repo);
+
+    let mut cmd = Command::new("/bin/borg");
+    cmd.arg("init")
+      .arg(&cfg.general.repo);
+
+    if let Some(args) = init.args {
+      for arg in args {
+        cmd.arg(arg);
+      }
+    }
+
+    info!("Running: {:?}", cmd);
+
+    run_borg(cfg, &cmd);
+  }
 }
 
 pub fn create(cfg: &config::Config) {
   let tm = time::now_utc();
   let tm = tm.rfc3339();
 
-  info!("Creating backup: {}", cfg.repo);
+  info!("Creating backup: {}", cfg.general.repo);
 
   let mut cmd = Command::new("/bin/borg");
   cmd.arg("create")
-    .arg(format!("{}::{}", &cfg.repo, tm));
-  for source in &cfg.sources {
+    .arg(format!("{}::{}", &cfg.general.repo, tm));
+  for source in &cfg.create.sources {
     cmd.arg(source);
   }
-  if let Some(compression) = cfg.compression.clone() {
-    cmd.arg("--compression")
-      .arg(compression);
+
+  if let Some(args) = cfg.create.args.clone() {
+    for arg in args {
+      cmd.arg(arg);
+    }
   }
-  if cfg.one_file_system.unwrap_or(false) {
-    cmd.arg("--one-file-system");
-  }
-  cmd.arg("--stats")
-    .arg("--verbose")
-    .arg("--progress");
 
   info!("Running: {:?}", cmd);
 
-  run_borg(&cmd);
+  run_borg(cfg, &cmd);
 }
 
-pub fn retention(cfg: &config::Config) {
-  if let Some(retention) = cfg.retention.clone() {
-    info!("Processing backup retention...");
+pub fn purge(cfg: &config::Config) {
+  if let Some(purge) = cfg.purge.clone() {
+    info!("Purging backup: {}", cfg.general.repo);
 
     let mut cmd = Command::new("/bin/borg");
     cmd.arg("prune")
-      .arg(&cfg.repo)
-      .arg("--stats")
-      .arg("--verbose");
-    if let Some(within) = retention.keep_within {
-      cmd.arg(format!("--keep-within={}", within));
-    }
-    if let Some(hourly) = retention.keep_hourly {
-      cmd.arg(format!("--keep-hourly={}", hourly));
-    }
-    if let Some(daily) = retention.keep_daily {
-      cmd.arg(format!("--keep-daily={}", daily));
-    }
-    if let Some(weekly) = retention.keep_weekly {
-      cmd.arg(format!("--keep-weekly={}", weekly));
-    }
-    if let Some(monthly) = retention.keep_monthly {
-      cmd.arg(format!("--keep-monthly={}", monthly));
-    }
-    if let Some(yearly) = retention.keep_yearly {
-      cmd.arg(format!("--keep-yearly={}", yearly));
+      .arg(&cfg.general.repo);
+
+    if let Some(args) = purge.args {
+      for arg in args {
+        cmd.arg(arg);
+      }
     }
 
     info!("Running: {:?}", cmd);
 
-    run_borg(&cmd);
+    run_borg(cfg, &cmd);
   }
 }
 
-pub fn consistency(cfg: &config::Config) {
-  if let Some(consistency) = cfg.consistency.clone() {
-    if consistency.check.unwrap_or(false) {
-      info!("Checking backup consistency...");
+pub fn check(cfg: &config::Config) {
+  if let Some(check) = cfg.check.clone() {
+    info!("Checking backup: {}", cfg.general.repo);
 
-      let mut cmd = Command::new("/bin/borg");
-      cmd.arg("check")
-        .arg(&cfg.repo)
-        .arg("--verbose");
+    let mut cmd = Command::new("/bin/borg");
+    cmd.arg("check")
+      .arg(&cfg.general.repo);
 
-      info!("Running: {:?}", cmd);
-
-      run_borg(&cmd);
+    if let Some(args) = check.args {
+      for arg in args {
+        cmd.arg(arg);
+      }
     }
+
+    info!("Running: {:?}", cmd);
+
+    run_borg(cfg, &cmd);
   }
 }

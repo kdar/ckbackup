@@ -10,5 +10,4 @@ Only tested in Windows 7.
 Notes
 =====
 
-This is HIGHLY personalized and not to be used generally. Modify for your own use
-or submit a PR.
+This was made more for personal use, but feel free to submit an issue or PR.

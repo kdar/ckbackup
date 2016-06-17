@@ -3,34 +3,43 @@ use toml::{Parser, Value};
 use toml;
 use std::io::Read;
 use std::path::Path;
+use std::collections::HashMap;
 
 #[derive(RustcEncodable, RustcDecodable, Debug, Default, Clone)]
-pub struct Retention {
-  pub keep_within: Option<String>,
-  pub keep_hourly: Option<u32>,
-  pub keep_daily: Option<u32>,
-  pub keep_weekly: Option<u32>,
-  pub keep_monthly: Option<u32>,
-  pub keep_yearly: Option<u32>,
+pub struct Check {
+  pub args: Option<Vec<String>>,
 }
 
 #[derive(RustcEncodable, RustcDecodable, Debug, Default, Clone)]
-pub struct Consistency {
-  pub check: Option<bool>,
+pub struct Purge {
+  pub args: Option<Vec<String>>,
+}
+
+#[derive(RustcEncodable, RustcDecodable, Debug, Default, Clone)]
+pub struct Create {
+  pub sources: Vec<String>,
+  pub volume_shadow_copy: Option<bool>,
+  pub args: Option<Vec<String>>,
+}
+
+#[derive(RustcEncodable, RustcDecodable, Debug, Default, Clone)]
+pub struct Init {
+  pub args: Option<Vec<String>>,
+}
+
+#[derive(RustcEncodable, RustcDecodable, Debug, Default, Clone)]
+pub struct General {
+  pub repo: String,
+  pub env: Option<HashMap<String, String>>,
 }
 
 #[derive(RustcEncodable, RustcDecodable, Debug, Default)]
 pub struct Config {
-  pub user: String,
-  pub hostname: String,
-  pub repo: String,
-  pub sources: Vec<String>,
-
-  pub compression: Option<String>,
-  pub one_file_system: Option<bool>,
-  pub retention: Option<Retention>,
-  pub consistency: Option<Consistency>,
-  pub volume_shadow_copy: Option<bool>,
+  pub general: General,
+  pub init: Option<Init>,
+  pub create: Create,
+  pub purge: Option<Purge>,
+  pub check: Option<Check>,
 }
 
 impl Config {

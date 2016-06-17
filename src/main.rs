@@ -30,9 +30,9 @@ fn cmd_auto() {
   v.create(&cfg).unwrap(); // destroyed on drop
   let mapped_drives = v.get_mapped_drives();
 
-  // Do variable subsitution in the repo.
-  cfg.repo = cfg.repo.replace("{hostname}", &cfg.hostname).replace("{user}", &cfg.user);
-  cfg.sources = cfg.sources
+  // Fix up the config.
+  cfg.create.sources = cfg.create
+    .sources
     .iter()
     .map(|source| {
       if !mapped_drives.is_empty() {
@@ -50,8 +50,8 @@ fn cmd_auto() {
 
   backup::init(&cfg);
   backup::create(&cfg);
-  backup::retention(&cfg);
-  backup::consistency(&cfg);
+  backup::purge(&cfg);
+  backup::check(&cfg);
 }
 
 fn main() {

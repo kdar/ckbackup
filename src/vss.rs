@@ -60,10 +60,10 @@ impl Vss {
   }
 
   pub fn create(&mut self, cfg: &config::Config) -> Result<(), String> {
-    if cfg.volume_shadow_copy.unwrap_or(false) {
+    if cfg.create.volume_shadow_copy.unwrap_or(false) {
       self.delete();
 
-      let drive_letters = extract_drive_letters(&cfg.sources);
+      let drive_letters = extract_drive_letters(&cfg.create.sources);
 
       info!("Grabbing available drive letters...");
 
