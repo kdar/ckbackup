@@ -6,18 +6,19 @@ extern crate kernel32x;
 #[macro_use]
 extern crate log;
 extern crate simplelog;
+extern crate clap;
 
 use std::process::exit;
 use simplelog::{TermLogger, LogLevelFilter};
+use clap::{App, AppSettings, SubCommand};
+use std::io;
 
 mod config;
 mod cygpath;
 mod vss;
 mod backup;
 
-fn main() {
-  TermLogger::init(LogLevelFilter::Info).unwrap();
-
+fn cmd_auto() {
   let mut cfg = match config::Config::parse("config.toml") {
     Ok(c) => c,
     Err(e) => {
@@ -52,4 +53,21 @@ fn main() {
   backup::create(&cfg);
   backup::retention(&cfg);
   backup::consistency(&cfg);
+}
+
+fn main() {
+  TermLogger::init(LogLevelFilter::Info).unwrap();
+
+  let app = App::new("ckbackup")
+    .setting(AppSettings::SubcommandRequiredElseHelp)
+    .version("0.0.1")
+    .author("Kevin Darlington <kevin@outroot.com>")
+    .about("A VSS enabled wrapper around Borg to be used in automated scripts.")
+    .subcommand(SubCommand::with_name("auto").about("Does automatic backup based on config.toml."));
+  let matches = app.get_matches();
+
+  match matches.subcommand() {
+    ("auto", Some(_)) => cmd_auto(),
+    _ => {}
+  };
 }
