@@ -17,6 +17,16 @@ mod cygpath;
 mod vss;
 mod backup;
 
+#[cfg(debug_assertions)]
+pub fn get_vendor_dir() -> String {
+  return "vendor".to_owned();
+}
+
+#[cfg(not(debug_assertions))]
+pub fn get_vendor_dir() -> String {
+  return ".".to_owned();
+}
+
 fn cmd_auto() {
   let mut cfg = match config::Config::parse("config.toml") {
     Ok(c) => c,

@@ -2,3 +2,4 @@ target
 /vss-vars.cmd
 /config.toml
 /.doc
+/dist

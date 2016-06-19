@@ -12,8 +12,6 @@ use kernel32x;
 
 use config;
 
-const VSHADOW: &'static str = "vendor\\vshadow64.exe";
-
 fn to_wstring(str: &str) -> Vec<u16> {
   let v: Vec<u16> = OsStr::new(str).encode_wide().chain(Some(0).into_iter()).collect();
   v
@@ -82,7 +80,7 @@ impl Vss {
       }
 
       info!("Creating shadow volumes...");
-      let mut cmd = Command::new(VSHADOW);
+      let mut cmd = Command::new(super::get_vendor_dir() + "\\vshadow64.exe");
       cmd.arg("-p")
         .arg("-nw")
         .arg("-script=vss-vars.cmd");
@@ -152,7 +150,7 @@ impl Vss {
     if Path::new("vss-vars.cmd").exists() {
       let vars = parse_vars("vss-vars.cmd").unwrap();
       info!("Removing volume shadow set: \"{}\"", vars[0].1);
-      Command::new(VSHADOW)
+      Command::new(super::get_vendor_dir() + "\\vshadow64.exe")
         .arg(format!("-dx={}", vars[0].1))
         .output()
         .unwrap();
