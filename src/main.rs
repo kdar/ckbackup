@@ -14,6 +14,8 @@ use simplelog::{TermLogger, LogLevelFilter};
 use clap::{App, AppSettings, SubCommand};
 use std::ffi::OsStr;
 use std::os::windows::ffi::OsStrExt;
+
+#[cfg(not(debug_assertions))]
 use std::path::Path;
 
 mod config;
