@@ -4,7 +4,7 @@ use time;
 use config;
 
 fn run_borg(cfg: &config::Config, borg_cmd: &Command) {
-  let mut cmd = Command::new(super::get_vendor_dir() + "\\borg\\bin\\bash");
+  let mut cmd = Command::new(super::get_exe_dir() + "\\vendor\\borg\\bin\\bash");
   cmd.arg("--login")
     .arg("-c")
     .arg(format!("{:?}", borg_cmd))

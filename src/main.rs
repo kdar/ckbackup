@@ -3,6 +3,7 @@ extern crate toml;
 extern crate rustc_serialize;
 extern crate kernel32;
 extern crate kernel32x;
+extern crate winapi;
 #[macro_use]
 extern crate log;
 extern crate simplelog;
@@ -11,20 +12,37 @@ extern crate clap;
 use std::process::exit;
 use simplelog::{TermLogger, LogLevelFilter};
 use clap::{App, AppSettings, SubCommand};
+use std::ffi::OsStr;
+use std::os::windows::ffi::OsStrExt;
+use std::path::Path;
 
 mod config;
 mod cygpath;
 mod vss;
 mod backup;
 
+fn to_wstring(str: &str) -> Vec<u16> {
+  let v: Vec<u16> = OsStr::new(str).encode_wide().chain(Some(0).into_iter()).collect();
+  v
+}
+
 #[cfg(debug_assertions)]
-pub fn get_vendor_dir() -> String {
+pub fn get_exe_dir() -> String {
   return "vendor".to_owned();
 }
 
 #[cfg(not(debug_assertions))]
-pub fn get_vendor_dir() -> String {
-  return ".".to_owned();
+pub fn get_exe_dir() -> String {
+  let mut path: Vec<u16> = vec![0; winapi::MAX_PATH];
+  unsafe {
+    kernel32x::GetModuleFileNameW(0 as winapi::HMODULE,
+                                  path.as_mut_ptr(),
+                                  winapi::MAX_PATH as u32);
+  }
+  let path = String::from_utf16(path.as_slice()).unwrap();
+  let path = Path::new(&path);
+  let parent = path.parent().unwrap();
+  parent.to_str().unwrap().to_owned()
 }
 
 fn cmd_auto() {
