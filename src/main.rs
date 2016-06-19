@@ -31,7 +31,7 @@ fn cmd_auto() {
   let mut cfg = match config::Config::parse("config.toml") {
     Ok(c) => c,
     Err(e) => {
-      println!("{}", e);
+      error!("{}", e);
       exit(1);
     }
   };

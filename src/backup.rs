@@ -20,7 +20,7 @@ fn run_borg(cfg: &config::Config, borg_cmd: &Command) {
   match cmd.output() {
     Ok(_) => (),
     Err(e) => {
-      println!("{}: {:?}", e, cmd);
+      error!("{}: {:?}", e, cmd);
       exit(1);
     }
   };

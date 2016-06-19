@@ -91,7 +91,7 @@ impl Vss {
       match output {
         Ok(_) => {}
         Err(e) => {
-          println!("{}: {:?}", e, cmd);
+          error!("{}: {:?}", e, cmd);
           exit(1);
         }
       };
@@ -150,10 +150,15 @@ impl Vss {
     if Path::new("vss-vars.cmd").exists() {
       let vars = parse_vars("vss-vars.cmd").unwrap();
       info!("Removing volume shadow set: \"{}\"", vars[0].1);
-      Command::new(super::get_vendor_dir() + "\\vshadow64.exe")
-        .arg(format!("-dx={}", vars[0].1))
-        .output()
-        .unwrap();
+      let mut cmd = Command::new(super::get_vendor_dir() + "\\vshadow64.exe");
+      cmd.arg(format!("-dx={}", vars[0].1));
+      match cmd.output() {
+        Ok(_) => {}
+        Err(e) => {
+          error!("{}: {:?}", e, cmd);
+          exit(1);
+        }
+      };
     }
   }
 }
