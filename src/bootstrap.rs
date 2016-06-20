@@ -71,8 +71,6 @@ fn download_setup() -> Result<String, String> {
 pub fn install() -> Result<(), String> {
   let setup = try_s!(download_setup());
 
-  // let setup = "C:\\Users\\outroot\\AppData\\Local\\Temp\\setup-x86_64.exe";
-
   let cygbuild = super::get_exe_dir() + "\\vendor\\borg";
   let cygmirror = "ftp://ftp.funet.fi/pub/mirrors/cygwin.com/pub/cygwin/";
   let buildpkgs = "python3,python3-setuptools,binutils,gcc-g++,libopenssl,openssl-devel,git,make,\
