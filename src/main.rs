@@ -8,6 +8,7 @@ extern crate winapi;
 extern crate log;
 extern crate simplelog;
 extern crate clap;
+extern crate hyper;
 
 use std::process::exit;
 use simplelog::{TermLogger, LogLevelFilter};
@@ -22,6 +23,7 @@ mod config;
 mod cygpath;
 mod vss;
 mod backup;
+mod bootstrap;
 
 fn to_wstring(str: &str) -> Vec<u16> {
   let v: Vec<u16> = OsStr::new(str).encode_wide().chain(Some(0).into_iter()).collect();
@@ -30,7 +32,7 @@ fn to_wstring(str: &str) -> Vec<u16> {
 
 #[cfg(debug_assertions)]
 pub fn get_exe_dir() -> String {
-  return "vendor".to_owned();
+  return ".".to_owned();
 }
 
 #[cfg(not(debug_assertions))]
@@ -84,6 +86,16 @@ fn cmd_auto() {
   backup::check(&cfg);
 }
 
+fn cmd_bootstrap() {
+  match bootstrap::install() {
+    Ok(_) => (),
+    Err(err) => {
+      error!("Error bootstrapping: {}", err);
+      exit(1);
+    }
+  };
+}
+
 fn main() {
   TermLogger::init(LogLevelFilter::Info).unwrap();
 
@@ -92,11 +104,14 @@ fn main() {
     .version("0.0.1")
     .author("Kevin Darlington <kevin@outroot.com>")
     .about("A VSS enabled wrapper around Borg to be used in automated scripts.")
-    .subcommand(SubCommand::with_name("auto").about("Does automatic backup based on config.toml."));
+    .subcommand(SubCommand::with_name("auto").about("Does automatic backup based on config.toml."))
+    .subcommand(SubCommand::with_name("bootstrap")
+      .about("Downloads borg/cygwin and configures it."));
   let matches = app.get_matches();
 
   match matches.subcommand() {
     ("auto", Some(_)) => cmd_auto(),
+    ("bootstrap", Some(_)) => cmd_bootstrap(),
     _ => {}
   };
 }

@@ -3,3 +3,5 @@ target
 /config.toml
 /.doc
 /dist
+/setup.log*
+/vendor/borg

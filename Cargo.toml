@@ -12,6 +12,7 @@ kernel32-sys = "0.2"
 kernel32x = { path = "kernel32x" }
 simplelog = "0.1"
 log = "0.3"
+hyper = "0.9"
 
 [dependencies.clap]
 version = "2"
