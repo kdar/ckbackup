@@ -3,6 +3,7 @@ extern crate toml;
 extern crate rustc_serialize;
 extern crate kernel32;
 extern crate kernel32x;
+extern crate powrprofx;
 extern crate winapi;
 #[macro_use]
 extern crate log;
@@ -15,7 +16,6 @@ use simplelog::{TermLogger, LogLevelFilter};
 use clap::{App, AppSettings, SubCommand};
 use std::ffi::OsStr;
 use std::os::windows::ffi::OsStrExt;
-
 #[cfg(not(debug_assertions))]
 use std::path::Path;
 
@@ -84,6 +84,14 @@ fn cmd_auto() {
   backup::create(&cfg);
   backup::purge(&cfg);
   backup::check(&cfg);
+
+  if let Some(post) = cfg.post {
+    if post.sleep.unwrap_or(false) {
+      unsafe {
+        powrprofx::SetSuspendState(1, 0, 0);
+      }
+    }
+  }
 }
 
 fn cmd_bootstrap() {

@@ -1,27 +1,66 @@
-user = "kev"
-hostname = "hostname"
-repo = "root@192.168.0.1:/backup/{user}/{hostname}"
+# The general section applies to the program as a whole.
+[general]
+# The repo for borg to backup to. Refer to its documentation
+# as to how this should look.
+repo = "root@192.168.0.1:/backup"
 
-compression = "lz4"
-one_file_system = true
+# Environment variables to set when running the Borg command.
+# I personally use this to disable the ssh user agent so
+# it uses the correct key.
+env = { SSH_AUTH_SOCK = "" }
 
+# This section is used on `borg init <repo>`
+[init]
+# The args to use on `borg init <repo>`
+args = ["--verbose"]
+
+# This section is used on `borg create <repo>`
+[create]
+# These are the sources that will be backed up.
+# Refer to the borg documentation on what you can
+# have here.
 sources = [
   'C:\',
   'D:\',
 ]
 
+# Enable or disable volume shadow copying in windows.
+# This allows you to copy things that are in use.
 volume_shadow_copy = true
 
-[retention]
-#keep_within = 3H
-#keep_hourly = 24
-keep_daily = 7
-keep_weekly = 4
-keep_monthly = 6
-#keep_yearly = 1
+# The args to use on `borg create <repo>`
+args = [
+  "--stats",
+  "--verbose",
+  "--progress",
+  "--one-file-system",
+  "--compression",
+  "lz4"
+]
 
-[consistency]
-check = true
+# This section is used on `borg purge <repo>`
+[purge]
+# The args to use on `borg purge <repo>`.
+# Refer to the borg documentation on what arguments
+# you can pass to purge in order to have the retention
+# you're looking for.
+args = [
+  "--stats",
+  "--verbose",
+  "--keep-daily=7",
+  "--keep-weekly=4",
+  "--keep-monthly=6",
+]
 
-# [env]
-# SSH_AUTH_SOCK = ""
+# This section is used on `borg check <repo>`
+[check]
+# The args to use on `borg check <repo>`.
+args = [
+  "--verbose",
+]
+
+# This section has configuration options on what to do
+# after the backup and all other tasks are complete.
+[post]
+# Put this computer to sleep.
+sleep = true

@@ -11,3 +11,9 @@ Notes
 =====
 
 This was made more for personal use, but feel free to submit an issue or PR.
+
+Installation
+============
+
+Make sure you're compiling with MSYS2 and don't have the gcc package installed. You only
+need "mingw-w64-x86_64-toolchain".

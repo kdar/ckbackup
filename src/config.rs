@@ -6,6 +6,11 @@ use std::path::Path;
 use std::collections::HashMap;
 
 #[derive(RustcEncodable, RustcDecodable, Debug, Default, Clone)]
+pub struct Post {
+  pub sleep: Option<bool>,
+}
+
+#[derive(RustcEncodable, RustcDecodable, Debug, Default, Clone)]
 pub struct Check {
   pub args: Option<Vec<String>>,
 }
@@ -40,6 +45,7 @@ pub struct Config {
   pub create: Create,
   pub purge: Option<Purge>,
   pub check: Option<Check>,
+  pub post: Option<Post>,
 }
 
 impl Config {

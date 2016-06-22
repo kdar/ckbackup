@@ -1,0 +1,11 @@
+[package]
+name = "powrprofx"
+version = "0.1.0"
+authors = ["Kevin Darlington <kevin@outroot.com>"]
+build = "build.rs"
+
+[lib]
+name = "powrprofx"
+
+[dependencies]
+winapi = "0.2"
