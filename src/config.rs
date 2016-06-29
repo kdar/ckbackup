@@ -38,8 +38,14 @@ pub struct General {
   pub env: Option<HashMap<String, String>>,
 }
 
+#[derive(RustcEncodable, RustcDecodable, Debug, Default, Clone)]
+pub struct Pre {
+  pub wait_on_connect: Option<String>,
+}
+
 #[derive(RustcEncodable, RustcDecodable, Debug, Default)]
 pub struct Config {
+  pub pre: Option<Pre>,
   pub general: General,
   pub init: Option<Init>,
   pub create: Create,

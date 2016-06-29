@@ -24,6 +24,7 @@ mod cygpath;
 mod vss;
 mod backup;
 mod bootstrap;
+mod hostup;
 
 fn to_wstring(str: &str) -> Vec<u16> {
   let v: Vec<u16> = OsStr::new(str).encode_wide().chain(Some(0).into_iter()).collect();
@@ -57,6 +58,12 @@ fn cmd_auto() {
       exit(1);
     }
   };
+
+  if let Some(ref pre) = cfg.pre {
+    if let Some(ref remote) = pre.wait_on_connect {
+      hostup::wait_on_connect(remote.as_str());
+    }
+  }
 
   let mut v = vss::Vss::new();
   v.create(&cfg).unwrap(); // destroyed on drop
