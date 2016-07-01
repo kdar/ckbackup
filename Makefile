@@ -1,9 +1,16 @@
 SHELL:=/bin/bash
 
-dist:
+build:
 	cargo build --release -j 8
-	cp target/release/ckbackup.exe dist/
-	-rsync -vza --progress --ignore-errors --exclude 'borg' vendor dist
+
+distbuild: build
+	@cp target/release/ckbackup.exe dist/
+
+distdlls:
+	-@bash scripts/dist_dlls.bash
+
+dist: distdlls distbuild	
+	-@rsync -vza --progress --ignore-errors --exclude 'borg' vendor dist
 
 github: clean dist
 	$(eval describe := $(shell git describe))
