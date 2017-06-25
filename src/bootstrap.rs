@@ -12,12 +12,12 @@ const NSSWITCH: &'static str = r#"# /etc/nsswitch.conf
 #    see https://cygwin.com/cygwin-ug-net/ntsec.html#ntsec-mapping-nsswitch
 #
 # Defaults:
-# passwd:   files db
+passwd:   files db
 # group:    files db
 # db_enum:  cache builtin
-# db_home:  /home/%U
-db_home: windows
-# db_shell: /bin/bash
+db_home:  /home/%U
+# db_home: windows
+db_shell: /bin/bash
 # db_gecos: <empty>
 "#;
 
@@ -73,7 +73,7 @@ pub fn install() -> Result<(), String> {
 
   let cygbuild = super::get_exe_dir() + "\\vendor\\borg";
   let cygmirror = "ftp://ftp.funet.fi/pub/mirrors/cygwin.com/pub/cygwin/";
-  let buildpkgs = "python3,python3-setuptools,binutils,gcc-g++,libopenssl,openssl-devel,git,make,\
+  let buildpkgs = "python3,python3-setuptools,python3-devel,binutils,gcc-g++,libopenssl,openssl-devel,git,make,\
                    openssh,liblz4-devel,liblz4_1";
 
   info!("Installing cygwin...");
@@ -97,7 +97,11 @@ pub fn install() -> Result<(), String> {
   try_s!(cmd!(format!("{}\\bin\\bash", &cygbuild),
               "--login",
               "-c",
-              "easy_install-3.4 --upgrade pip"));
+              "/usr/bin/easy_install* --upgrade pip"));
+  try_s!(cmd!(format!("{}\\bin\\bash", &cygbuild),
+              "--login",
+              "-c",
+              "pip install --upgrade msgpack-python"));
   try_s!(cmd!(format!("{}\\bin\\bash", &cygbuild),
               "--login",
               "-c",

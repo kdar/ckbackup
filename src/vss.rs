@@ -5,8 +5,6 @@ use std::process::{Command, exit};
 use std::fs::File;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::ffi::OsStr;
-use std::os::windows::ffi::OsStrExt;
 use kernel32;
 use kernel32x;
 
